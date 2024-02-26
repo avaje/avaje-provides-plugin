@@ -46,7 +46,7 @@ import org.apache.maven.project.MavenProject;
  */
 @Mojo(
     name = "module-spi",
-    defaultPhase = LifecyclePhase.COMPILE,
+    defaultPhase = LifecyclePhase.PROCESS_CLASSES,
     requiresDependencyResolution = ResolutionScope.COMPILE)
 public class ModuleSPIMojo extends AbstractMojo {
 
