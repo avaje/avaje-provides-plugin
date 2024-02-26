@@ -1,4 +1,4 @@
-# Avaje Build Maven plugin
+# Avaje Build Maven Plugin
 
 Maven plugin that post-processes modular applications `module-info.class` files after compilation to add all the required `provides` clauses for all services registered under `META-INF/services` as well as adding `requires` for certain avaje-inject plugins if applicable.
 
@@ -16,7 +16,6 @@ This plugin uses the JDK 22 [Class-File API](https://openjdk.org/jeps/457). As t
   <version>${version}</version>
   <executions>
     <execution>
-      <phase>process-sources</phase>
       <goals>
         <goal>provides</goal>
         <goal>module-spi</goal>
