@@ -36,14 +36,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
-/**
- * Plugin that generates <code>target/avaje-module-provides.txt</code> and <code>
- * target/avaje-plugin-provides.txt</code> based on the avaje-inject modules and plugins in the
- * classpath.
- *
- * <p>This allows the avaje-inject-generator annotation processor to be aware of all the components
- * and plugins provided by other modules in the classpath at compile time.
- */
+/** Plugin that transforms the project module-info class file to register META-INF/services. */
 @Mojo(
     name = "module-spi",
     defaultPhase = LifecyclePhase.PROCESS_CLASSES,
@@ -87,14 +80,14 @@ public class ModuleSPIMojo extends AbstractMojo {
     }
   }
 
-  private byte[] transform(final Path moduleCF, Path path) throws IOException {
+  private byte[] transform(final Path moduleCF, Path metaInfServicesPath) throws IOException {
     ClassFile cf = ClassFile.of();
     ClassModel classModel = cf.parse(moduleCF);
     return cf.build(
         classModel.thisClass().asSymbol(),
         classBuilder -> {
           for (ClassElement ce : classModel) {
-            if (!(ce instanceof ModuleAttribute mm)) {
+            if (!(ce instanceof ModuleAttribute ma)) {
 
               classBuilder.with(ce);
 
@@ -102,7 +95,7 @@ public class ModuleSPIMojo extends AbstractMojo {
 
               var newModule =
                   ModuleAttribute.of(
-                      mm.moduleName().asSymbol(), b -> transformDirectives(mm, b, path));
+                      ma.moduleName().asSymbol(), b -> transformDirectives(ma, b, metaInfServicesPath));
 
               classBuilder.with(newModule);
             }
@@ -111,49 +104,49 @@ public class ModuleSPIMojo extends AbstractMojo {
   }
 
   private void transformDirectives(
-      ModuleAttribute mm, ModuleAttributeBuilder b, Path metaInfServicesPath) {
+      ModuleAttribute moduleAttribute, ModuleAttributeBuilder moduleBuilder, Path metaInfServicesPath) {
 
-    mm.moduleFlags().forEach(b::moduleFlags);
-    b.moduleFlags(mm.moduleFlagsMask());
-    mm.exports().forEach(b::exports);
-    mm.opens().forEach(b::opens);
+    moduleAttribute.moduleFlags().forEach(moduleBuilder::moduleFlags);
+    moduleBuilder.moduleFlags(moduleAttribute.moduleFlagsMask());
+    moduleAttribute.exports().forEach(moduleBuilder::exports);
+    moduleAttribute.opens().forEach(moduleBuilder::opens);
 
-    mm.requires().stream()
+    moduleAttribute.requires().stream()
         .filter(r -> !r.has(AccessFlag.STATIC))
         .map(r -> r.requires().name().toString())
         .filter(n -> n.contains("io.avaje"))
         .forEach(avajeModuleNames::add);
 
-    mm.requires().forEach(r -> requires(r, b));
+    moduleAttribute.requires().forEach(r -> requires(r, moduleBuilder));
 
-    mm.uses().forEach(b::uses);
+    moduleAttribute.uses().forEach(moduleBuilder::uses);
 
     if (!metaInfServicesPath.toFile().exists()) {
-      mm.provides().stream().forEach(b::provides);
+      moduleAttribute.provides().stream().forEach(moduleBuilder::provides);
       return;
     }
 
     try (var servicesDir = Files.walk(metaInfServicesPath)) {
-      addServices(mm, b, servicesDir);
+      addServices(moduleAttribute, moduleBuilder, servicesDir);
 
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
-  /** Will add the avaje plugins if applicable */
-  private void requires(ModuleRequireInfo r, ModuleAttributeBuilder b) {
+  /** Will add the avaje-inject plugins if applicable so JPMS applications work correctly */
+  private void requires(ModuleRequireInfo r, ModuleAttributeBuilder moduleBuilder) {
 
     final var moduleString = r.requires().name().stringValue();
 
     if (r.has(AccessFlag.STATIC) || !moduleString.contains("avaje")) {
 
-      b.requires(r);
+      moduleBuilder.requires(r);
       return;
     }
 
     var log = getLog();
-    b.requires(r);
+    moduleBuilder.requires(r);
     switch (moduleString) {
       case "io.avaje.jsonb" -> {
         if (!avajeModuleNames.contains(IO_AVAJE_JSONB_PLUGIN)
@@ -164,7 +157,7 @@ public class ModuleSPIMojo extends AbstractMojo {
                   ModuleDesc.of(IO_AVAJE_JSONB_PLUGIN),
                   r.requiresFlagsMask(),
                   r.requiresVersion().map(Utf8Entry::stringValue).orElse(null));
-          b.requires(plugin);
+          moduleBuilder.requires(plugin);
           log.info(STR."Adding `requires \{IO_AVAJE_JSONB_PLUGIN};` to compiled module-info.class");
          }
       }
@@ -182,7 +175,7 @@ public class ModuleSPIMojo extends AbstractMojo {
                     ModuleDesc.of(pluginModule),
                     r.requiresFlagsMask(),
                     r.requiresVersion().map(Utf8Entry::stringValue).orElse(null));
-            b.requires(plugin);
+            moduleBuilder.requires(plugin);
             log.info(STR."Adding `requires \{pluginModule};` to compiled module-info.class");
           } else if (!avajeModuleNames.contains(IO_AVAJE_VALIDATOR_HTTP_PLUGIN) && hasHttp) {
             var plugin =
@@ -190,7 +183,7 @@ public class ModuleSPIMojo extends AbstractMojo {
                     ModuleDesc.of(IO_AVAJE_VALIDATOR_HTTP_PLUGIN),
                     r.requiresFlagsMask(),
                     r.requiresVersion().map(Utf8Entry::stringValue).orElse(null));
-            b.requires(plugin);
+            moduleBuilder.requires(plugin);
             log.info(STR."Adding `requires \{IO_AVAJE_VALIDATOR_HTTP_PLUGIN};` to compiled module-info.class");
           }
         }
@@ -201,7 +194,7 @@ public class ModuleSPIMojo extends AbstractMojo {
     }
   }
 
-  private void addServices(ModuleAttribute mm, ModuleAttributeBuilder b, Stream<Path> servicesDir) {
+  private void addServices(ModuleAttribute moduleAttribute, ModuleAttributeBuilder moduleBuilder, Stream<Path> servicesDir) {
     var serviceMap =
         servicesDir
             .skip(1)
@@ -222,9 +215,9 @@ public class ModuleSPIMojo extends AbstractMojo {
                       }
                     }));
 
-    mm.provides().stream()
+    moduleAttribute.provides().stream()
         .filter(p -> !serviceMap.containsKey(p.provides().name().stringValue().replace("/", ".")))
-        .forEach(b::provides);
+        .forEach(moduleBuilder::provides);
     var log = getLog();
     serviceMap.forEach(
         (k, v) -> {
@@ -232,7 +225,7 @@ public class ModuleSPIMojo extends AbstractMojo {
           var with = v.stream().map(ClassDesc::displayName).collect(joining(","));
           log.info(STR."Adding `provides \{provides.displayName()} with \{with};` to compiled module-info.class");
 
-          b.provides(ModuleProvideInfo.of(provides, v));
+          moduleBuilder.provides(ModuleProvideInfo.of(provides, v));
         });
   }
 }
