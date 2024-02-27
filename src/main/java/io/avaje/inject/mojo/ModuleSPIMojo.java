@@ -135,18 +135,18 @@ public class ModuleSPIMojo extends AbstractMojo {
   }
 
   /** Will add the avaje-inject plugins if applicable so JPMS applications work correctly */
-  private void requires(ModuleRequireInfo r, ModuleAttributeBuilder moduleBuilder) {
+  private void requires(ModuleRequireInfo moduleRequires, ModuleAttributeBuilder moduleBuilder) {
 
-    final var moduleString = r.requires().name().stringValue();
+    final var moduleString = moduleRequires.requires().name().stringValue();
 
-    if (r.has(AccessFlag.STATIC) || !moduleString.contains("avaje")) {
+    if (moduleRequires.has(AccessFlag.STATIC) || !moduleString.contains("avaje")) {
 
-      moduleBuilder.requires(r);
+      moduleBuilder.requires(moduleRequires);
       return;
     }
 
     var log = getLog();
-    moduleBuilder.requires(r);
+    moduleBuilder.requires(moduleRequires);
     switch (moduleString) {
       case "io.avaje.jsonb" -> {
         if (!avajeModuleNames.contains(IO_AVAJE_JSONB_PLUGIN)
@@ -155,8 +155,8 @@ public class ModuleSPIMojo extends AbstractMojo {
           var plugin =
               ModuleRequireInfo.of(
                   ModuleDesc.of(IO_AVAJE_JSONB_PLUGIN),
-                  r.requiresFlagsMask(),
-                  r.requiresVersion().map(Utf8Entry::stringValue).orElse(null));
+                  moduleRequires.requiresFlagsMask(),
+                  moduleRequires.requiresVersion().map(Utf8Entry::stringValue).orElse(null));
           moduleBuilder.requires(plugin);
           log.info(STR."Adding `requires \{IO_AVAJE_JSONB_PLUGIN};` to compiled module-info.class");
          }
@@ -173,16 +173,16 @@ public class ModuleSPIMojo extends AbstractMojo {
             var plugin =
                 ModuleRequireInfo.of(
                     ModuleDesc.of(pluginModule),
-                    r.requiresFlagsMask(),
-                    r.requiresVersion().map(Utf8Entry::stringValue).orElse(null));
+                    moduleRequires.requiresFlagsMask(),
+                    moduleRequires.requiresVersion().map(Utf8Entry::stringValue).orElse(null));
             moduleBuilder.requires(plugin);
             log.info(STR."Adding `requires \{pluginModule};` to compiled module-info.class");
           } else if (!avajeModuleNames.contains(IO_AVAJE_VALIDATOR_HTTP_PLUGIN) && hasHttp) {
             var plugin =
                 ModuleRequireInfo.of(
                     ModuleDesc.of(IO_AVAJE_VALIDATOR_HTTP_PLUGIN),
-                    r.requiresFlagsMask(),
-                    r.requiresVersion().map(Utf8Entry::stringValue).orElse(null));
+                    moduleRequires.requiresFlagsMask(),
+                    moduleRequires.requiresVersion().map(Utf8Entry::stringValue).orElse(null));
             moduleBuilder.requires(plugin);
             log.info(STR."Adding `requires \{IO_AVAJE_VALIDATOR_HTTP_PLUGIN};` to compiled module-info.class");
           }
