@@ -13,6 +13,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -41,6 +44,8 @@ public class AutoProvidesMojo extends AbstractMojo {
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
 
+  private final List<AvajeModule> modules = new ArrayList<>();
+
   @Override
   public void execute() throws MojoExecutionException {
     final var listUrl = compileDependencies();
@@ -51,14 +56,16 @@ public class AutoProvidesMojo extends AbstractMojo {
     }
 
     try (var newClassLoader = createClassLoader(listUrl);
-        var f = createFileWriter("avaje-plugin-exists.txt");
+        var flagFile = createFileWriter("avaje-plugin-exists.txt");
         var moduleWriter = createFileWriter("avaje-module-provides.txt");
-        var pluginWriter = createFileWriter("avaje-plugin-provides.txt")) {
+        var pluginWriter = createFileWriter("avaje-plugin-provides.txt");
+        var moduleCSV = createFileWriter("avaje-module-dependencies.csv")) {
 
-      f.append(DISABLING_AVAJE_MODULE_VERIFICATION);
+      flagFile.append(DISABLING_AVAJE_MODULE_VERIFICATION);
       getLog().info(DISABLING_AVAJE_MODULE_VERIFICATION);
       writeProvidedPlugins(newClassLoader, pluginWriter);
       writeProvidedModules(newClassLoader, moduleWriter);
+      writeModuleCSV(moduleCSV);
 
     } catch (final IOException e) {
       throw new MojoExecutionException("Failed to write spi classes", e);
@@ -117,22 +124,56 @@ public class AutoProvidesMojo extends AbstractMojo {
 
     final Log log = getLog();
     for (final var module : ServiceLoader.load(Module.class, newClassLoader)) {
-      log.info("Detected External Module: " + module.getClass().getCanonicalName());
 
+      final var name = module.getClass().getCanonicalName();
+      log.info("Detected External Module: " + name);
+
+      final var provides = new ArrayList<String>();
       for (final Class<?> provide : module.provides()) {
-        providedTypes.add(provide.getCanonicalName());
+        var type = provide.getCanonicalName();
+        providedTypes.add(type);
+        provides.add(type);
       }
       for (final Class<?> provide : module.autoProvides()) {
-        providedTypes.add(provide.getCanonicalName());
+        var type = provide.getCanonicalName();
+        providedTypes.add(type);
+        provides.add(type);
       }
       for (final Class<?> provide : module.autoProvidesAspects()) {
-        providedTypes.add(wrapAspect(provide.getCanonicalName()));
+        var type = wrapAspect(provide.getCanonicalName());
+        providedTypes.add(type);
+        provides.add(type);
       }
+
+      final var requires =
+          Arrays.stream(module.requires()).map(Class::getCanonicalName).collect(toList());
+
+      Arrays.stream(module.autoRequires()).map(Class::getCanonicalName).forEach(requires::add);
+      Arrays.stream(module.requiresPackages()).map(Class::getCanonicalName).forEach(requires::add);
+      Arrays.stream(module.autoRequiresAspects())
+          .map(Class::getCanonicalName)
+          .map(AutoProvidesMojo::wrapAspect)
+          .forEach(requires::add);
+      modules.add(new AvajeModule(name, provides, requires));
     }
 
     for (final String providedType : providedTypes) {
       moduleWriter.write(providedType);
       moduleWriter.write("\n");
+    }
+  }
+
+  private void writeModuleCSV(FileWriter moduleWriter) throws IOException {
+    moduleWriter.write("External Module Type|Provides|Requires");
+    for (AvajeModule avajeModule : modules) {
+      moduleWriter.write("\n");
+      moduleWriter.write(avajeModule.name());
+      moduleWriter.write("|");
+      var provides = avajeModule.provides().stream().collect(joining(","));
+      moduleWriter.write(provides.isEmpty() ? " " : provides);
+      moduleWriter.write("|");
+      var requires = avajeModule.requires().stream().collect(joining(","));
+      moduleWriter.write(requires.isEmpty() ? " " : requires);
     }
   }
 

@@ -1,4 +1,4 @@
-[![Supported JVM Versions](https://img.shields.io/badge/JVM-22-brightgreen.svg?&logo=openjdk)](https://github.com/quarkusio/quarkus/actions/runs/113853915/)
+![Supported JVM Versions](https://img.shields.io/badge/JVM-22-brightgreen.svg?&logo=openjdk)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-inject/blob/master/LICENSE)
 
 # Avaje Build Maven Plugin
@@ -20,15 +20,17 @@ This plugin uses the JDK 22 [Class-File API](https://openjdk.org/jeps/457). As t
   <executions>
     <execution>
       <goals>
-        <goal>provides</goal>
-        <goal>module-spi</goal>
+        <!-- Will generate files that will disable avaje APT module-info spi validation -->
+        <goal>provides</goal> 
+        <!-- Will transform a module-info after compilation -->
+        <goal>aug-spi</goal>
       </goals>
     </execution>
   </executions>
 </plugin>
 ```
 
-## Example `Module-Info.class` transformation
+## Example `module-info.class` transformation
 
 Given a module-info like: 
 
