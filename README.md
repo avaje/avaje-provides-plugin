@@ -1,7 +1,7 @@
 ![Supported JVM Versions](https://img.shields.io/badge/JVM-22-brightgreen.svg?&logo=openjdk)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-inject/blob/master/LICENSE)
 
-# Avaje Build Maven Plugin
+# Avaje Provides Maven Plugin
 
 Maven plugin that post-processes modular applications' `module-info.class` files after compilation to add all the required `provides` clauses for all services registered under `META-INF/services` as well as adding `requires` for certain avaje-inject plugins if applicable.
 
@@ -15,7 +15,7 @@ This plugin uses the JDK 22 [Class-File API](https://openjdk.org/jeps/457). As t
 ```xml
 <plugin>
   <groupId>io.avaje</groupId>
-  <artifactId>avaje-build-maven-plugin</artifactId>
+  <artifactId>avaje-provides-maven-plugin</artifactId>
   <version>${version}</version>
   <executions>
     <execution>
@@ -23,7 +23,7 @@ This plugin uses the JDK 22 [Class-File API](https://openjdk.org/jeps/457). As t
         <!-- Will generate files that will disable avaje APT module-info spi validation -->
         <goal>provides</goal> 
         <!-- Will transform a module-info after compilation -->
-        <goal>aug-spi</goal>
+        <goal>module-spi</goal>
       </goals>
     </execution>
   </executions>

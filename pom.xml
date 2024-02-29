@@ -9,7 +9,7 @@
   </parent>
 
   <groupId>io.avaje</groupId>
-  <artifactId>avaje-build-maven-plugin</artifactId>
+  <artifactId>avaje-provides-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <version>1.0-beta</version>
   <properties>
@@ -44,7 +44,7 @@
         <artifactId>maven-plugin-plugin</artifactId>
         <version>3.11.0</version>
         <configuration>
-          <goalPrefix>avaje-build</goalPrefix>
+          <goalPrefix>avaje-provides</goalPrefix>
         </configuration>
       </plugin>
       <plugin>
