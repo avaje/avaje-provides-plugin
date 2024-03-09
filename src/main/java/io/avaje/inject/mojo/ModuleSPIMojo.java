@@ -63,8 +63,8 @@ public class ModuleSPIMojo extends AbstractMojo {
 
     var dirPath = directory.getAbsolutePath();
 
-    var moduleCF = Paths.get(STR."\{dirPath}\\classes\\module-info.class");
-    var servicesDirectory = Paths.get(STR."\{dirPath}\\classes\\META-INF\\services");
+    var moduleCF = Paths.get(dirPath + "dirPath\\classes\\module-info.class");
+    var servicesDirectory = Paths.get(dirPath + "dirPath\\classes\\META-INF\\services");
 
     if (!moduleCF.toFile().exists()) {
       // no module-info to modify
@@ -95,7 +95,8 @@ public class ModuleSPIMojo extends AbstractMojo {
 
               var newModule =
                   ModuleAttribute.of(
-                      ma.moduleName().asSymbol(), b -> transformDirectives(ma, b, metaInfServicesPath));
+                      ma.moduleName().asSymbol(),
+                      b -> transformDirectives(ma, b, metaInfServicesPath));
 
               classBuilder.with(newModule);
             }
@@ -104,7 +105,9 @@ public class ModuleSPIMojo extends AbstractMojo {
   }
 
   private void transformDirectives(
-      ModuleAttribute moduleAttribute, ModuleAttributeBuilder moduleBuilder, Path metaInfServicesPath) {
+      ModuleAttribute moduleAttribute,
+      ModuleAttributeBuilder moduleBuilder,
+      Path metaInfServicesPath) {
 
     moduleAttribute.moduleFlags().forEach(moduleBuilder::moduleFlags);
     moduleBuilder.moduleFlags(moduleAttribute.moduleFlagsMask());
@@ -158,8 +161,10 @@ public class ModuleSPIMojo extends AbstractMojo {
                   moduleRequires.requiresFlagsMask(),
                   moduleRequires.requiresVersion().map(Utf8Entry::stringValue).orElse(null));
           moduleBuilder.requires(plugin);
-          log.info(STR."Adding `requires \{IO_AVAJE_JSONB_PLUGIN};` to compiled module-info.class");
-         }
+          log.info(
+              "Adding `requires %s;` to compiled module-info.class"
+                  .formatted(IO_AVAJE_JSONB_PLUGIN));
+        }
       }
 
       case "io.avaje.validation" -> {
@@ -176,7 +181,7 @@ public class ModuleSPIMojo extends AbstractMojo {
                     moduleRequires.requiresFlagsMask(),
                     moduleRequires.requiresVersion().map(Utf8Entry::stringValue).orElse(null));
             moduleBuilder.requires(plugin);
-            log.info(STR."Adding `requires \{pluginModule};` to compiled module-info.class");
+            log.info("Adding `requires %s;` to compiled module-info.class".formatted(pluginModule));
           } else if (!avajeModuleNames.contains(IO_AVAJE_VALIDATOR_HTTP_PLUGIN) && hasHttp) {
             var plugin =
                 ModuleRequireInfo.of(
@@ -184,7 +189,9 @@ public class ModuleSPIMojo extends AbstractMojo {
                     moduleRequires.requiresFlagsMask(),
                     moduleRequires.requiresVersion().map(Utf8Entry::stringValue).orElse(null));
             moduleBuilder.requires(plugin);
-            log.info(STR."Adding `requires \{IO_AVAJE_VALIDATOR_HTTP_PLUGIN};` to compiled module-info.class");
+            log.info(
+                "Adding `requires %s;` to compiled module-info.class"
+                    .formatted(IO_AVAJE_VALIDATOR_HTTP_PLUGIN));
           }
         }
       }
@@ -194,7 +201,10 @@ public class ModuleSPIMojo extends AbstractMojo {
     }
   }
 
-  private void addServices(ModuleAttribute moduleAttribute, ModuleAttributeBuilder moduleBuilder, Stream<Path> servicesDir) {
+  private void addServices(
+      ModuleAttribute moduleAttribute,
+      ModuleAttributeBuilder moduleBuilder,
+      Stream<Path> servicesDir) {
     var serviceMap =
         servicesDir
             .skip(1)
@@ -223,7 +233,9 @@ public class ModuleSPIMojo extends AbstractMojo {
         (k, v) -> {
           var provides = ClassDesc.of(k);
           var with = v.stream().map(ClassDesc::displayName).collect(joining(","));
-          log.info(STR."Adding `provides \{provides.displayName()} with \{with};` to compiled module-info.class");
+          log.info(
+              "Adding `provides %s with %s;` to compiled module-info.class"
+                  .formatted(provides.displayName(), with));
 
           moduleBuilder.provides(ModuleProvideInfo.of(provides, v));
         });
