@@ -60,11 +60,10 @@ public class ModuleSPIMojo extends AbstractMojo {
     if (!directory.exists()) {
       throw new MojoExecutionException("Failed to find build folder");
     }
-
     var dirPath = directory.getAbsolutePath();
 
-    var moduleCF = Paths.get(dirPath + "dirPath\\classes\\module-info.class");
-    var servicesDirectory = Paths.get(dirPath + "dirPath\\classes\\META-INF\\services");
+    var moduleCF = Paths.get(dirPath + "\\classes\\module-info.class");
+    var servicesDirectory = Paths.get(dirPath + "\\classes\\META-INF\\services");
 
     if (!moduleCF.toFile().exists()) {
       // no module-info to modify
