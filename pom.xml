@@ -13,7 +13,7 @@
   <packaging>maven-plugin</packaging>
   <version>0.1-SNAPSHOT</version>
   <properties>
-    <maven.compiler.release>22</maven.compiler.release>
+    <maven.compiler.release>23</maven.compiler.release>
   </properties>
 
   <dependencies>
