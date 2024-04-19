@@ -1,5 +1,6 @@
 ![Supported JVM Versions](https://img.shields.io/badge/JVM-22-brightgreen.svg?&logo=openjdk)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-inject/blob/master/LICENSE)
+![Maven Central : avaje-provides-maven-plugin](https://img.shields.io/maven-central/v/io.avaje/avaje-provides-maven-plugin.svg?label=Maven%20Central)
 
 # Avaje Provides Maven Plugin
 
