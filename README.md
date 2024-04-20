@@ -16,17 +16,8 @@ This plugin uses the JDK 22 [Class-File API](https://openjdk.org/jeps/457). As t
 <plugin>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-provides-maven-plugin</artifactId>
-  <version>${version}</version>
-  <executions>
-    <execution>
-      <goals>
-        <goal>provides</goal> 
-        <!-- Will disable avaje APT module-info spi validation -->
-        <!-- Will transform a module-info after compilation -->
-        <goal>add-module-spi</goal>
-      </goals>
-    </execution>
-  </executions>
+  <version>${version}</version> 
+  <extensions>true</extensions>
 </plugin>
 ```
 
