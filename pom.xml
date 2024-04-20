@@ -14,6 +14,7 @@
   <version>0.10-SNAPSHOT</version>
   <properties>
     <maven.compiler.release>22</maven.compiler.release>
+    <avaje.inject.version>10.0-RC1</avaje.inject.version>
   </properties>
 
   <dependencies>
@@ -34,6 +35,7 @@
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject</artifactId>
       <version>10.0-RC2</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

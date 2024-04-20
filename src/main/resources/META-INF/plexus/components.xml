@@ -11,9 +11,11 @@
           <phase>avaje-inject-maven-plugin-not-used-phase</phase>
         </phases>
         <default-phases>
+          <process-resources> 
+            io.avaje:avaje-provides-maven-plugin:${project.version}:disable-apt-validation
+          </process-resources>
           <process-sources>  
             io.avaje:avaje-inject-maven-plugin:10.0-RC2:provides
-            io.avaje:avaje-provides-maven-plugin:${project.version}:provides
           </process-sources>
           <process-classes>
             io.avaje:avaje-provides-maven-plugin:${project.version}:add-module-spi
