@@ -12,7 +12,6 @@
         </phases>
         <default-phases>
           <process-sources>  
-            io.avaje:avaje-inject-maven-plugin:10.0-RC2:provides
             io.avaje:avaje-provides-maven-plugin:${project.version}:provides
           </process-sources>
           <process-classes>
