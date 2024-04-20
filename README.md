@@ -20,10 +20,10 @@ This plugin uses the JDK 22 [Class-File API](https://openjdk.org/jeps/457). As t
   <executions>
     <execution>
       <goals>
-        <!-- Will generate files that will disable avaje APT module-info spi validation -->
         <goal>provides</goal> 
+        <!-- Will disable avaje APT module-info spi validation -->
         <!-- Will transform a module-info after compilation -->
-        <goal>module-spi</goal>
+        <goal>add-module-spi</goal>
       </goals>
     </execution>
   </executions>
