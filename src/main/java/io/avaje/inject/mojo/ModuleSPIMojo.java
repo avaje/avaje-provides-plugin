@@ -10,10 +10,10 @@ import java.lang.classfile.ClassElement;
 import java.lang.classfile.ClassFile;
 import java.lang.classfile.ClassModel;
 import java.lang.classfile.attribute.ModuleAttribute;
+import java.lang.classfile.attribute.ModuleAttribute.ModuleAttributeBuilder;
 import java.lang.classfile.attribute.ModuleProvideInfo;
 import java.lang.classfile.attribute.ModuleRequireInfo;
 import java.lang.classfile.constantpool.Utf8Entry;
-import java.lang.classfile.attribute.ModuleAttribute.ModuleAttributeBuilder;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ModuleDesc;
 import java.lang.reflect.AccessFlag;
@@ -33,14 +33,10 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
 /** Plugin that transforms the project module-info class file to register META-INF/services. */
-@Mojo(
-    name = "module-spi",
-    defaultPhase = LifecyclePhase.PROCESS_CLASSES,
-    requiresDependencyResolution = ResolutionScope.COMPILE)
+@Mojo(name = "add-module-spi", defaultPhase = LifecyclePhase.PROCESS_CLASSES)
 public class ModuleSPIMojo extends AbstractMojo {
 
   private static final String IO_AVAJE_JSONB_PLUGIN = "io.avaje.jsonb.plugin";
