@@ -11,10 +11,9 @@
   <groupId>io.avaje</groupId>
   <artifactId>avaje-provides-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>0.10-SNAPSHOT</version>
+  <version>0.10</version>
   <properties>
     <maven.compiler.release>22</maven.compiler.release>
-    <avaje.inject.version>10.0-RC1</avaje.inject.version>
   </properties>
 
   <dependencies>
