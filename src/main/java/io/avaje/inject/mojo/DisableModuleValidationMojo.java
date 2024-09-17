@@ -3,6 +3,7 @@ package io.avaje.inject.mojo;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -27,6 +28,19 @@ public class DisableModuleValidationMojo extends AbstractMojo {
 
   @Override
   public void execute() throws MojoExecutionException {
+
+    var canRun =
+        Integer.getInteger("java.specification.version") == 23
+            && ManagementFactory.getRuntimeMXBean().getInputArguments().stream()
+                .anyMatch("--enable-preview"::equals);
+
+    if(!canRun) {
+      getLog()
+          .warn(
+              "This version of the avaje-provides-plugin only works on JDK 23 with --enable-preview cofigured in MAVEN_OPTS");
+      return;
+    }
+
     final var directory = new File(project.getBuild().getDirectory());
     if (!directory.exists()) {
       directory.mkdirs();
