@@ -43,10 +43,12 @@ public class ModuleSPIProcessor {
   private static final Set<String> avajeModuleNames = new HashSet<>();
   private final MavenProject project;
   private final Log log;
+  private final Set<String> compiledClasses;
 
-  public ModuleSPIProcessor(MavenProject project, Log log) {
+  public ModuleSPIProcessor(MavenProject project, Log log, Set<String> compiledClasses) {
     this.project = project;
     this.log = log;
+    this.compiledClasses = compiledClasses;
   }
 
   public void execute() throws MojoExecutionException {
@@ -211,6 +213,7 @@ public class ModuleSPIProcessor {
                             .map(s -> s.replace("\s", "").replace("$", ".").split(","))
                             .flatMap(Arrays::stream)
                             .filter(not(String::isBlank))
+                            .filter(this::isProjectClass)
                             .map(ClassDesc::of)
                             .toList();
                       } catch (IOException e) {
@@ -231,5 +234,9 @@ public class ModuleSPIProcessor {
 
           moduleBuilder.provides(ModuleProvideInfo.of(provides, v));
         });
+  }
+
+  private boolean isProjectClass(String clazz) {
+    return compiledClasses.contains(clazz.substring(clazz.lastIndexOf(".") + 1));
   }
 }
