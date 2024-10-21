@@ -22,7 +22,9 @@ This plugin uses the JDK 22 [Class-File API](https://openjdk.org/jeps/457). As t
 </plugin>
 ```
 
-## Example `module-info.class` transformation
+## Goals
+
+### `add-module-spi`
 
 Given a module-info like: 
 
@@ -41,7 +43,7 @@ And a `META-INF/my.example.SPIServiceInterface` file (either manually created or
 ```
 my.example.SPIServiceInterfaceImpl
 ```
-The module-info classfile will be transformed after compilation to look like:
+This goal will transform the module-info classfile after compilation to look like:
 
 ```java
 module avaje.example {
@@ -54,12 +56,6 @@ module avaje.example {
 }
 ```
 
-## Goals
-
-### `add-module-spi`
-
-As stated above, this goal runs after compilation to add 
-
 ### `disable-apt-validation`
 
-as the above goal runs after compilation, this goal generates a file that is read by any apt project that uses avaje-prisms based to disable prism's `module-info` provides validation.
+As the `add-module-spi` goal runs after compilation, this goal generates a file before compilation that signals any apt project that uses avaje-prisms's `ModuleInfoReader` for service validation to disable `provides` module validation.
