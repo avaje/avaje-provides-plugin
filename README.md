@@ -53,3 +53,13 @@ module avaje.example {
   provides my.example.SPIServiceInterface with my.example.SPIServiceInterfaceImpl;
 }
 ```
+
+## Goals
+
+### `add-module-spi`
+
+As stated above, this goal runs after compilation to add 
+
+### `disable-apt-validation`
+
+as the above goal runs after compilation, this goal generates a file that is read by any apt project that uses avaje-prisms based to disable prism's `module-info` provides validation.

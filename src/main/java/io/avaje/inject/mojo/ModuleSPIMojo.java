@@ -1,6 +1,11 @@
 package io.avaje.inject.mojo;
 
+import java.io.File;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -31,6 +36,27 @@ public class ModuleSPIMojo extends AbstractMojo {
       return;
     }
 
-    new ModuleSPIProcessor(project, getLog()).execute();
+    new ModuleSPIProcessor(project, getLog(), compiledClasses()).execute();
+  }
+
+  private Set<String> compiledClasses() throws MojoExecutionException {
+    try {
+
+      final Set<String> targetClasses = new HashSet<>();
+
+      var classpathElements = project.getCompileClasspathElements();
+      for (var element : classpathElements) {
+
+        try (var paths = Files.walk(new File(element).toPath())) {
+          paths
+              .filter(p -> p.toString().contains(".class"))
+              .map(p -> p.getFileName().toString().replace(".class", ""))
+              .forEach(targetClasses::add);
+        }
+      }
+      return targetClasses;
+    } catch (final Exception e) {
+      throw new MojoExecutionException("Failed to get compiled classes", e);
+    }
   }
 }
