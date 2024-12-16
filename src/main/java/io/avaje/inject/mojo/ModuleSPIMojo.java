@@ -1,10 +1,8 @@
 package io.avaje.inject.mojo;
 
 import java.io.File;
-import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -24,15 +22,11 @@ public class ModuleSPIMojo extends AbstractMojo {
   @Override
   public void execute() throws MojoExecutionException {
 
-    var canRun =
-        Integer.getInteger("java.specification.version") == 23
-            && ManagementFactory.getRuntimeMXBean().getInputArguments().stream()
-                .anyMatch("--enable-preview"::equals);
 
-    if (!canRun) {
+    if (Integer.getInteger("java.specification.version") < 24) {
       getLog()
-          .warn(
-              "This version of the avaje-provides-plugin only works on JDK 23 with --enable-preview cofigured in MAVEN_OPTS");
+          .error(
+              "This version of the avaje-provides-plugin only works on JDK 24 and up");
       return;
     }
 

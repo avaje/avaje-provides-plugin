@@ -30,7 +30,7 @@ public class DisableModuleValidationMojo extends AbstractMojo {
   public void execute() throws MojoExecutionException {
 
     if (Integer.getInteger("java.specification.version") < 24) {
-      getLog().warn("This version of the avaje-provides-plugin only works on JDK 24 and up");
+      getLog().error("This version of the avaje-provides-plugin only works on JDK 24 and up");
       return;
     }
 

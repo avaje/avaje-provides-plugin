@@ -4,7 +4,7 @@
     <component>
       <role>org.apache.maven.lifecycle.Lifecycle</role>
       <implementation>org.apache.maven.lifecycle.Lifecycle</implementation>
-      <role-hint>avaje-inject-maven-plugin</role-hint>
+      <role-hint>avaje-provides-maven-plugin</role-hint>
       <configuration>
         <id>avaje-provides-maven-plugin</id>
         <phases>
@@ -14,9 +14,6 @@
           <process-resources> 
             io.avaje:avaje-provides-maven-plugin:${project.version}:disable-apt-validation
           </process-resources>
-          <process-sources>  
-            io.avaje:avaje-inject-maven-plugin:10.4:provides
-          </process-sources>
           <process-classes>
             io.avaje:avaje-provides-maven-plugin:${project.version}:add-module-spi
           </process-classes>
