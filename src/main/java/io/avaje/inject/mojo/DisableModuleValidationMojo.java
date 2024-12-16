@@ -29,15 +29,8 @@ public class DisableModuleValidationMojo extends AbstractMojo {
   @Override
   public void execute() throws MojoExecutionException {
 
-    var canRun =
-        Integer.getInteger("java.specification.version") == 23
-            && ManagementFactory.getRuntimeMXBean().getInputArguments().stream()
-                .anyMatch("--enable-preview"::equals);
-
-    if(!canRun) {
-      getLog()
-          .warn(
-              "This version of the avaje-provides-plugin only works on JDK 23 with --enable-preview cofigured in MAVEN_OPTS");
+    if (Integer.getInteger("java.specification.version") < 24) {
+      getLog().warn("This version of the avaje-provides-plugin only works on JDK 24 and up");
       return;
     }
 
