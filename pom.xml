@@ -11,9 +11,9 @@
   <groupId>io.avaje</groupId>
   <artifactId>avaje-provides-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>1.2-SNAPSHOT</version>
+  <version>2.0-SNAPSHOT</version>
   <properties>
-    <maven.compiler.release>23</maven.compiler.release>
+    <maven.compiler.release>24</maven.compiler.release>
   </properties>
 
   <dependencies>
@@ -50,20 +50,8 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-                <compilerArgs>
-                    --enable-preview
-                </compilerArgs>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.11.2</version>
-        <configuration>
-            <additionalOptions>--enable-preview</additionalOptions>
-        </configuration>
       </plugin>
     </plugins>
   </build>
