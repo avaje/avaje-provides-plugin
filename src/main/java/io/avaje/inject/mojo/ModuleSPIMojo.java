@@ -22,11 +22,8 @@ public class ModuleSPIMojo extends AbstractMojo {
   @Override
   public void execute() throws MojoExecutionException {
 
-
     if (Integer.getInteger("java.specification.version") < 24) {
-      getLog()
-          .error(
-              "This version of the avaje-provides-plugin only works on JDK 24 and up");
+      getLog().error("This version of the avaje-provides-plugin only works on JDK 24 and up");
       return;
     }
 
@@ -50,7 +47,9 @@ public class ModuleSPIMojo extends AbstractMojo {
       }
       return targetClasses;
     } catch (final Exception e) {
-      throw new MojoExecutionException("Failed to get compiled classes", e);
+      getLog().warn("Failed to get compiled classes", e);
+
+      return Set.of();
     }
   }
 }
