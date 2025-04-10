@@ -30,7 +30,7 @@ public class ModuleSPIMojo extends AbstractMojo {
     new ModuleSPIProcessor(project, getLog(), compiledClasses()).execute();
   }
 
-  private Set<String> compiledClasses() throws MojoExecutionException {
+  private Set<String> compiledClasses() {
     try {
 
       final Set<String> targetClasses = new HashSet<>();

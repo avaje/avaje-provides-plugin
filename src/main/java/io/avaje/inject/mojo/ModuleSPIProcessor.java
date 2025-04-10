@@ -59,8 +59,9 @@ public class ModuleSPIProcessor {
     }
     var dirPath = directory.getAbsolutePath();
 
-    var moduleCF = Paths.get(dirPath + "\\classes\\module-info.class");
-    var servicesDirectory = Paths.get(dirPath + "\\classes\\META-INF\\services");
+    Path classes = Paths.get(dirPath).resolve("classes");
+    var moduleCF = classes.resolve("module-info.class");
+    var servicesDirectory = classes.resolve("META-INF").resolve("services");
 
     if (!moduleCF.toFile().exists()) {
       // no module-info to modify
