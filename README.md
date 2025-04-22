@@ -53,4 +53,4 @@ module avaje.example {
 
 ### `disable-apt-validation`
 
-As the `add-module-spi` goal runs after compilation, this goal generates a file before compilation that signals any apt project that uses avaje-prisms's `ModuleInfoReader` for service validation to disable `provides` module validation.
+As the `add-module-spi` goal must run after compilation, this goal generates a file before compilation that signals any apt project that uses avaje-prisms's `ModuleInfoReader` to not fail compilation on `provides` module validation.
