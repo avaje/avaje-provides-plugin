@@ -227,8 +227,11 @@ public class ModuleSPIProcessor {
         .forEach(moduleBuilder::provides);
     serviceMap.forEach(
         (k, v) -> {
+          if (v.isEmpty()) return;
+
           var provides = ClassDesc.of(k);
           var with = v.stream().map(ClassDesc::displayName).collect(joining(","));
+
           log.info(
               "Adding `provides %s with %s;` to compiled module-info.class"
                   .formatted(provides.displayName(), with));
