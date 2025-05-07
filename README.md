@@ -1,10 +1,10 @@
 ![Supported JVM Versions](https://img.shields.io/badge/JVM-24+-brightgreen.svg?&logo=openjdk)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-inject/blob/master/LICENSE)
-![Maven Central : avaje-provides-maven-plugin](https://img.shields.io/maven-central/v/io.avaje/avaje-provides-maven-plugin.svg?label=Maven%20Central)
+[![Maven Central](https://img.shields.io/maven-central/v/io.avaje/avaje-provides-maven-plugin.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/io.avaje/avaje-provides-maven-plugin)
 
 # Avaje Provides Maven Plugin
 
-Maven plugin that post-processes modular applications' `module-info.class` files after compilation to add all the required `provides` clauses for all services registered under `META-INF/services` as well as adding `requires` for certain avaje-inject plugins if applicable.
+Maven plugin that post-processes `module-info.class` files after compilation to add all the required `provides` clauses for all services registered under `META-INF/services` as well as adding `requires` for certain avaje-inject plugins if applicable.
 
 ## How to use
 
