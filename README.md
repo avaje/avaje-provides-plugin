@@ -15,7 +15,14 @@ Maven plugin that post-processes `module-info.class` files after compilation to 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-provides-maven-plugin</artifactId>
   <version>${version}</version> 
-  <extensions>true</extensions>
+  <executions>
+    <execution>
+      <goals>
+        <goal>disable-apt-validation</goal>
+        <goal>add-module-spi</goal>
+      </goals>
+    </execution>
+  </executions>
 </plugin>
 ```
 
