@@ -55,7 +55,8 @@ class ModuleSPIProcessor {
 
     Path classes = buildDir.resolve("classes").resolve("java").resolve("main");
     var moduleCF = classes.resolve("module-info.class");
-    var servicesDirectory = classes.resolve("META-INF").resolve("services");
+    // In Gradle's layout, processed resources live in build/resources/main/, not build/classes/java/main/
+    var servicesDirectory = buildDir.resolve("resources").resolve("main").resolve("META-INF").resolve("services");
 
     if (!moduleCF.toFile().exists()) {
       return;
