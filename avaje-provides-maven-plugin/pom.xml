@@ -3,14 +3,17 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>io.avaje</groupId>
-    <artifactId>avaje-provides-plugin-parent</artifactId>
-    <version>2.3</version>
+    <groupId>org.avaje</groupId>
+    <artifactId>java11-oss</artifactId>
+    <version>5.2</version>
   </parent>
 
+  <groupId>io.avaje</groupId>
   <artifactId>avaje-provides-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
+  <version>2.3</version>
   <properties>
+    <maven.compiler.release>24</maven.compiler.release>
     <project.build.outputTimestamp>2025-05-07T04:18:51Z</project.build.outputTimestamp>
   </properties>
 

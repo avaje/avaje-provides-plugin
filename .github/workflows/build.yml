@@ -48,6 +48,12 @@ jobs:
         run: mvn install --no-transfer-progress
         working-directory: avaje-provides-maven-plugin
 
+      # Run the Maven blackbox tests (compiles and runs Maven*Test classes only;
+      # Gradle-specific tests are excluded in the pom.xml)
+      - name: Run Maven blackbox tests
+        run: mvn test --no-transfer-progress
+        working-directory: avaje-provides-plugin-test
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
